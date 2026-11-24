@@ -30,9 +30,9 @@ export default function BlogPage() {
             No posts yet. Add a .md file to <code>content/blog</code> to publish one.
           </p>
         ) : (
-          <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <ul className="flex w-full max-w-8xl flex-col gap-6">
             {posts.map((post) => (
-              <li key={post.slug}>
+              <li key={post.slug} className="w-full">
                 <BlogCard post={post} />
               </li>
             ))}

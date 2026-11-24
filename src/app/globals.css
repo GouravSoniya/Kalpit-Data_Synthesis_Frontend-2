@@ -9,3 +9,8 @@
   --font-sans: var(--font-noto-sans), sans-serif;
   --color-paper: #fffaf2;
 }
+
+::selection {
+  background-color: #b85a3e;
+  color: #f6ece0;
+}

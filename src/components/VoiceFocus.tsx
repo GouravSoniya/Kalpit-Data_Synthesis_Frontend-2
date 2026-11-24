@@ -135,7 +135,7 @@ export default function VoiceFocus() {
   }, [activeId]);
 
   return (
-    <section className="bg-cream  px-6 py-14 md:px-4">
+    <section className="bg-cream px-6 py-14 md:px-4">
       <style>{`
         @keyframes vf-pop {
           from { opacity: 0; transform: translateY(12px) scale(0.97); }

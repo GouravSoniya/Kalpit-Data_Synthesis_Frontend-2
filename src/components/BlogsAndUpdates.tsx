@@ -19,6 +19,9 @@ function PatternArt() {
             <path d={star(127, 85, 17)} />
             <path d={star(0, 170, 22)} />
             <path d={star(85, 170, 18)} />
+            {/* wrapped copies so stars on the tile edges aren't cut in half */}
+            <path d={star(170, 0, 22)} />
+            <path d={star(170, 170, 22)} />
           </pattern>
           <pattern id="updates-scallops" width="84" height="30" patternUnits="userSpaceOnUse">
             <path d="M0 0Q38 4 42 24Q46 4 84 0" />
@@ -107,10 +110,12 @@ export default function BlogsAndUpdates() {
               <li key={item.id}>
                 <Link
                   href={item.href}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-clay/25 bg-paper transition-colors hover:border-clay/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
+                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-clay/25 bg-paper transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-clay/60 hover:shadow-[0_18px_40px_-18px_rgba(0,0,0,0.25)] focus-visible:-translate-y-1.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <div className="h-[230px] overflow-hidden border-b border-clay/25">
-                    <Art />
+                    <div className="size-full transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none">
+                      <Art />
+                    </div>
                   </div>
                   <div className="flex flex-1 flex-col p-[30px]">
                     <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-clay">
