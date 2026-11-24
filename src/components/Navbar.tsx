@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-const researchLinks = [
-  { label: "Publications", href: "/research/publications" },
-  { label: "Projects", href: "/research/projects" },
-];
 
 const links = [
   { label: "Updates", href: "/updates" },
+  { label: "Projects", href: "/projects" },
+  { label: "Blogs", href: "/blogs" },
   { label: "About us", href: "/about" },
 ];
 
@@ -49,71 +47,33 @@ export default function Navbar() {
   }, []);
 
   const linkClass =
-    "text-[13px] font-medium uppercase tracking-[0.14em] text-ink transition-colors hover:text-clay focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay";
+    "text-[14px] font-semibold uppercase tracking-[0.12em] text-ink transition-colors hover:text-clay focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay";
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 border-b-2 border-clay/30 bg-cream/95 backdrop-blur-md transition-[box-shadow] duration-300 ${
         scrolled || mobileOpen
-          ? "bg-cream/90 shadow-[0_1px_0_0] shadow-clay/20 backdrop-blur-md"
-          : "bg-transparent"
+          ? "shadow-[0_8px_24px_-12px] shadow-clay/40"
+          : "shadow-[0_4px_16px_-12px] shadow-clay/20"
       }`}
     >
       <nav
         aria-label="Main"
-        className="mx-auto grid max-w-[1440px] grid-cols-[1fr_auto] items-center px-6 py-7 md:grid-cols-[1fr_auto_1fr] md:px-[70px]"
+        className="mx-auto grid max-w-[1440px] grid-cols-[1fr_auto] items-center px-6 py-4 md:grid-cols-[1fr_auto_1fr] md:px-[70px]"
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-4">
           <span
             aria-hidden
-            className="grid size-10 place-items-center rounded-t-[14px] rounded-b-md bg-clay font-serif text-lg text-cream"
+            className="grid size-11 place-items-center rounded-t-[14px] rounded-b-md bg-clay font-serif text-xl text-cream shadow-md shadow-clay/40"
           >
             क
           </span>
-          <span className="text-xl text-ink">Kalpit Labs</span>
+          <span className="text-2xl font-semibold text-ink">Kalpit Labs</span>
         </Link>
 
         {/* Desktop links */}
         <div className="hidden items-center gap-11 md:flex">
-          <div ref={menuRef} className="relative">
-            <button
-              type="button"
-              aria-expanded={researchOpen}
-              aria-haspopup="menu"
-              onClick={() => setResearchOpen((o) => !o)}
-              className={`${linkClass} flex items-center gap-2`}
-            >
-              Research
-              <span
-                aria-hidden
-                className={`text-[9px] transition-transform ${researchOpen ? "rotate-180" : ""}`}
-              >
-                ▼
-              </span>
-            </button>
-
-            {researchOpen && (
-              <ul
-                role="menu"
-                className="absolute left-1/2 top-full mt-4 w-48 -translate-x-1/2 overflow-hidden rounded-2xl border border-clay/20 bg-cream py-2 shadow-lg shadow-clay/10"
-              >
-                {researchLinks.map((l) => (
-                  <li key={l.href} role="none">
-                    <Link
-                      role="menuitem"
-                      href={l.href}
-                      onClick={() => setResearchOpen(false)}
-                      className="block px-5 py-2.5 text-sm text-ink transition-colors hover:bg-clay/10 hover:text-clay"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
           {links.map((l) => (
             <Link key={l.href} href={l.href} className={linkClass}>
               {l.label}
@@ -125,7 +85,7 @@ export default function Navbar() {
         <div className="hidden justify-self-end md:block">
           <Link
             href="/contact"
-            className="inline-flex items-center gap-3 rounded-full bg-clay px-6 py-3 text-sm font-semibold text-cream shadow-[0_10px_24px_-8px] shadow-clay/60 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
+            className="inline-flex items-center gap-3 rounded-full bg-clay px-7 py-3.5 text-[15px] font-bold text-cream shadow-[0_10px_24px_-8px] shadow-clay/70 ring-2 ring-clay/20 ring-offset-2 ring-offset-cream transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
           >
             Talk with us <span aria-hidden>→</span>
           </Link>
@@ -137,9 +97,9 @@ export default function Navbar() {
           aria-label="Toggle menu"
           aria-expanded={mobileOpen}
           onClick={() => setMobileOpen((o) => !o)}
-          className="justify-self-end rounded-full p-2 text-ink md:hidden"
+          className="justify-self-end rounded-full border-2 border-clay/30 bg-cream p-2 text-ink md:hidden"
         >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             {mobileOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
           </svg>
         </button>
@@ -147,9 +107,9 @@ export default function Navbar() {
 
       {/* Mobile panel */}
       {mobileOpen && (
-        <div className="mx-6 rounded-3xl border border-clay/20 bg-cream p-6 shadow-lg shadow-clay/10 md:hidden">
+        <div className="mx-6 mb-4 rounded-3xl border-2 border-clay/30 bg-cream p-6 shadow-xl shadow-clay/20 md:hidden">
           <ul className="flex flex-col gap-5">
-            {[...researchLinks, ...links].map((l) => (
+            {[...links].map((l) => (
               <li key={l.href}>
                 <Link href={l.href} onClick={() => setMobileOpen(false)} className={linkClass}>
                   {l.label}

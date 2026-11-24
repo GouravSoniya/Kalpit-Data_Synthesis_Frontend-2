@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const CYCLE_MS = 3000; // time per domain
 
 type Probe = { text: string; result: "held" | "broke" };
 
@@ -9,7 +11,6 @@ const domains: {
   title: string;
   description: string;
   panelTitle: string;
-  footnote: string;
   probes: Probe[];
 }[] = [
   {
@@ -18,7 +19,6 @@ const domains: {
     description:
       "Generating realistic data to train and test models where real data is scarce or sensitive.",
     panelTitle: "Synthetic data checks",
-    footnote: "Illustrative synthetic data checks, not real results",
     probes: [
       { text: "Preserves rare edge cases", result: "held" },
       { text: "Keeps label balance", result: "held" },
@@ -31,7 +31,6 @@ const domains: {
     description:
       "Running AI systems through simulated worlds to see how they behave before they meet real ones.",
     panelTitle: "Simulated runs",
-    footnote: "Illustrative simulation runs, not real results",
     probes: [
       { text: "Recovers from a failed tool call", result: "held" },
       { text: "Stays on task over 50 turns", result: "held" },
@@ -44,7 +43,6 @@ const domains: {
     description:
       "Deliberately pushing a system with difficult, misleading and unexpected input to find where it breaks.",
     panelTitle: "Adversarial probes",
-    footnote: "Illustrative adversarial testing, not real results",
     probes: [
       { text: "Contradicts itself mid-call", result: "held" },
       { text: "Pressures for an exception", result: "held" },
@@ -89,6 +87,15 @@ function PanelPattern() {
 
 export default function ResearchDomains() {
   const [activeId, setActiveId] = useState("adversarial-testing");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const i = domains.findIndex((d) => d.id === activeId);
+      setActiveId(domains[(i + 1) % domains.length].id);
+    }, CYCLE_MS);
+
+    return () => clearTimeout(timer);
+  }, [activeId]);
   const active = domains.find((d) => d.id === activeId)!;
 
   return (
@@ -96,6 +103,21 @@ export default function ResearchDomains() {
       id="research"
       className="flex min-h-screen flex-col justify-center bg-cream px-6 py-16 md:px-27.5"
     >
+      <style>{`
+        @keyframes domain-in {
+          from { opacity: 0; transform: translateY(16px) scale(0.98); }
+          to { opacity: 1; transform: none; }
+        }
+        @keyframes probe-in {
+          from { opacity: 0; transform: translateX(-12px); }
+          to { opacity: 1; transform: none; }
+        }
+        .domain-enter { animation: domain-in 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .probe-enter { animation: probe-in 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        @media (prefers-reduced-motion: reduce) {
+          .domain-enter, .probe-enter { animation: none; }
+        }
+      `}</style>
       <p className="mb-5 text-xs font-medium uppercase tracking-[0.2em] text-clay">
         Research domains
       </p>
@@ -105,7 +127,7 @@ export default function ResearchDomains() {
         <em className="text-clay">experiment.</em>
       </h2>
 
-      <div className="mt-10 grid gap-6 lg:h-[clamp(440px,62vh,620px)] lg:grid-cols-[1.7fr_1fr]">
+      <div className="mt-10 grid gap-6 lg:min-h-[clamp(440px,62vh,620px)] lg:grid-cols-[1.7fr_1fr]">
         {/* Feature panel */}
         <div
           role="tabpanel"
@@ -115,7 +137,10 @@ export default function ResearchDomains() {
         >
           <PanelPattern />
 
-          <div className="flex w-full flex-col items-start gap-8 md:flex-row md:items-center md:gap-10">
+          <div
+            key={active.id}
+            className="domain-enter flex w-full flex-col items-start gap-8 md:flex-row md:items-center md:gap-10"
+          >
             <div className="md:w-[40%] md:shrink-0">
               <span className="inline-block rounded-full bg-cream px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-clay">
                 Research domain
@@ -134,10 +159,11 @@ export default function ResearchDomains() {
                 {active.panelTitle}
               </p>
               <ul className="mt-4 border-t border-clay/25">
-                {active.probes.map((p) => (
+                {active.probes.map((p, i) => (
                   <li
                     key={p.text}
-                    className="flex items-center justify-between gap-4 border-b border-clay/25 py-3.5 text-[15px] text-ink"
+                    style={{ animationDelay: `${150 + i * 110}ms` }}
+                    className="probe-enter flex items-center justify-between gap-4 border-b border-clay/25 py-3.5 text-[15px] text-ink"
                   >
                     <span>{p.text}</span>
                     <span
@@ -148,15 +174,12 @@ export default function ResearchDomains() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-brown">
-                {active.footnote}
-              </p>
             </div>
           </div>
         </div>
 
         {/* Domain list */}
-        <div role="tablist" aria-orientation="vertical" className="grid gap-5 lg:grid-rows-3">
+        <div role="tablist" aria-orientation="vertical" className="hidden gap-5 lg:grid lg:grid-rows-3">
           {domains.map((d) => {
             const isActive = d.id === activeId;
             return (

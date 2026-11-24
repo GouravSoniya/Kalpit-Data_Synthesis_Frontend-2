@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const CYCLE_MS = 6500; // time per scenario
+const STEP_MS = 700; // delay between chat bubbles
 
 type Turn = { who: "caller" | "agent"; text: string };
 
@@ -123,8 +126,26 @@ export default function VoiceFocus() {
   const [activeId, setActiveId] = useState("correction");
   const active = scenarios.find((s) => s.id === activeId)!;
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const i = scenarios.findIndex((s) => s.id === activeId);
+      setActiveId(scenarios[(i + 1) % scenarios.length].id);
+    }, CYCLE_MS);
+    return () => clearTimeout(timer);
+  }, [activeId]);
+
   return (
-    <section className="bg-cream px-6 py-14 md:px-4">
+    <section className="bg-cream  px-6 py-14 md:px-4">
+      <style>{`
+        @keyframes vf-pop {
+          from { opacity: 0; transform: translateY(12px) scale(0.97); }
+          to { opacity: 1; transform: none; }
+        }
+        .vf-anim { opacity: 0; animation: vf-pop 450ms ease-out forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .vf-anim { opacity: 1; animation: none; }
+        }
+      `}</style>
       <div className="overflow-hidden rounded-[28px] border border-clay/25 bg-paper">
         {/* Clay panel */}
         <div className="relative isolate overflow-hidden bg-clay px-6 py-10 md:px-16 md:py-14">
@@ -172,6 +193,7 @@ export default function VoiceFocus() {
               </div>
 
               <div
+                key={active.id}
                 id="voice-panel"
                 role="tabpanel"
                 aria-labelledby={`voice-tab-${active.id}`}
@@ -187,7 +209,8 @@ export default function VoiceFocus() {
                   {active.turns.map((t, i) => (
                     <div
                       key={i}
-                      className={`w-[88%] rounded-2xl px-3.5 py-2.5 ${
+                      style={{ animationDelay: `${i * STEP_MS}ms` }}
+                      className={`vf-anim w-[88%] rounded-2xl px-3.5 py-2.5 ${
                         t.who === "caller"
                           ? "bg-[#efe2cc]"
                           : "ml-auto border border-clay/25 bg-paper"
@@ -201,7 +224,10 @@ export default function VoiceFocus() {
                   ))}
                 </div>
 
-                <div className="mt-3 rounded-2xl border border-clay/40 bg-[#fbe9e2] p-4">
+                <div
+                  style={{ animationDelay: `${active.turns.length * STEP_MS + 200}ms` }}
+                  className="vf-anim mt-3 rounded-2xl border border-clay/40 bg-[#fbe9e2] p-4"
+                >
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8a3320]">
                     {active.failing.label}
                   </p>
@@ -218,10 +244,6 @@ export default function VoiceFocus() {
                   </div>
                 </div>
               </div>
-
-              <p className="mt-3 text-[10px] font-medium uppercase tracking-[0.14em] text-brown">
-                Illustrative simulation, not real results
-              </p>
             </div>
           </div>
         </div>

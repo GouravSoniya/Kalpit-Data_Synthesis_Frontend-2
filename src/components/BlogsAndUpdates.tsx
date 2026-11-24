@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getLatestFeed } from "@/lib/feed";
+import { formatUpdateDate } from "@/lib/updates";
 
 const star = (cx: number, cy: number, r: number) =>
   `M${cx} ${cy - r}Q${cx} ${cy} ${cx + r} ${cy}Q${cx} ${cy} ${cx} ${cy + r}Q${cx} ${cy} ${cx - r} ${cy}Q${cx} ${cy} ${cx} ${cy - r}Z`;
@@ -66,30 +68,14 @@ function DotsArt() {
   );
 }
 
-/* ---------- content ---------- */
+/* the three illustrations rotate through the latest items */
+const arts = [PatternArt, WaveformArt, DotsArt];
 
-const cards = [
-  {
-    kind: "Experiment",
-    title: "Title of an experiment",
-    preview: "A short preview of what was tried and what came out of it.",
-    art: <PatternArt />,
-  },
-  {
-    kind: "Build note",
-    title: "Title of a build note",
-    preview: "A short preview of something we made and how it works.",
-    art: <WaveformArt />,
-  },
-  {
-    kind: "What we're learning",
-    title: "Title of a learning",
-    preview: "A short preview of a lesson, an open question or a result.",
-    art: <DotsArt />,
-  },
-];
+/* ---------- section ---------- */
 
-export default function Updates() {
+export default function BlogsAndUpdates() {
+  const items = getLatestFeed(3);
+
   return (
     <section id="updates" className="bg-cream px-6 py-16 md:px-[110px]">
       <div className="flex flex-wrap items-center justify-between gap-6">
@@ -98,7 +84,7 @@ export default function Updates() {
             From the lab
           </p>
           <h2 className="font-serif text-[clamp(2.25rem,5vw,4rem)] leading-[1.05] tracking-tight text-ink">
-            Research &amp; <em className="text-clay">updates.</em>
+            Blogs &amp; <em className="text-clay">updates.</em>
           </h2>
         </div>
         <Link
@@ -109,26 +95,45 @@ export default function Updates() {
         </Link>
       </div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-3">
-        {cards.map((c) => (
-          <article
-            key={c.kind}
-            className="flex flex-col overflow-hidden rounded-3xl border border-clay/25 bg-paper"
-          >
-            <div className="h-[230px] overflow-hidden border-b border-clay/25">{c.art}</div>
-            <div className="flex flex-1 flex-col p-[30px]">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-clay">
-                {c.kind}
-              </p>
-              <h3 className="mt-3 font-serif text-[1.75rem] leading-tight text-ink">{c.title}</h3>
-              <p className="mt-3 max-w-[30ch] text-base leading-7 text-brown">{c.preview}</p>
-              <p className="mt-auto pt-6 text-[11px] font-medium uppercase tracking-[0.14em] text-brown/60">
-                Placeholder · not published
-              </p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <p className="mt-12 rounded-3xl border border-clay/25 bg-paper p-8 text-lg text-brown">
+          Nothing published yet. Check back soon.
+        </p>
+      ) : (
+        <ul className="mt-12 grid gap-6 md:grid-cols-3">
+          {items.map((item, i) => {
+            const Art = arts[i % arts.length];
+            return (
+              <li key={item.id}>
+                <Link
+                  href={item.href}
+                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-clay/25 bg-paper transition-colors hover:border-clay/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-clay"
+                >
+                  <div className="h-[230px] overflow-hidden border-b border-clay/25">
+                    <Art />
+                  </div>
+                  <div className="flex flex-1 flex-col p-[30px]">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-clay">
+                      {item.kind}
+                    </p>
+                    <h3 className="mt-3 line-clamp-4 font-serif text-[1.75rem] leading-tight text-ink">
+                      {item.title}
+                    </h3>
+                    {item.preview && (
+                      <p className="mt-3 line-clamp-3 max-w-[30ch] text-base leading-7 text-brown">
+                        {item.preview}
+                      </p>
+                    )}
+                    <p className="mt-auto pt-6 text-[11px] font-medium uppercase tracking-[0.14em] text-brown/60">
+                      <time dateTime={item.date}>{formatUpdateDate(item.date)}</time>
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

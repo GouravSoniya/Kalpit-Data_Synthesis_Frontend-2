@@ -160,6 +160,7 @@ export default function Workflow() {
       <div className="grid gap-10 md:grid-cols-3 md:gap-11">
         {/* ---- Step 1 ---- */}
         <Step
+          number={1}
           active
           lineClass="solid"
           title="Set up the callers"
@@ -184,6 +185,7 @@ export default function Workflow() {
 
         {/* ---- Step 2 ---- */}
         <Step
+          number={2}
           active
           lineClass="progress"
           lineFilled={failShown}
@@ -224,6 +226,7 @@ export default function Workflow() {
 
         {/* ---- Step 3 ---- */}
         <Step
+          number={3}
           active={failShown}
           title={fixing ? "Fix it, then rerun" : "See where it fails"}
           description={
@@ -276,10 +279,6 @@ export default function Workflow() {
           </div>
         </Step>
       </div>
-
-      <p className="mt-10 text-[11px] font-medium uppercase tracking-[0.16em] text-brown">
-        Illustrative workflow, draft description
-      </p>
     </div>
   );
 }
@@ -287,6 +286,7 @@ export default function Workflow() {
 /* ---------- pieces ---------- */
 
 function Step({
+  number,
   active,
   title,
   description,
@@ -295,6 +295,7 @@ function Step({
   lineFilled,
   cardClass = "",
 }: {
+  number: number;
   active: boolean;
   title: string;
   description: string;
@@ -328,16 +329,19 @@ function Step({
       {/* node */}
       <span
         aria-hidden
-        className={`relative z-10 grid size-10 place-items-center rounded-full text-lg transition-all duration-300 ${
+        className={`relative z-10 grid size-10 place-items-center rounded-full font-serif text-lg font-semibold transition-all duration-300 ${
           active
             ? "bg-clay text-cream shadow-[0_0_0_6px] shadow-clay/15"
-            : "bg-[#eadbc4] text-cream/70"
+            : "bg-[#eadbc4] text-clay/60"
         }`}
       >
-        ✦
+        {number}
       </span>
 
-      <h4 className="mt-5 font-serif text-[1.6rem] leading-tight text-ink">{title}</h4>
+      <h4 className="mt-5 font-serif text-[1.6rem] leading-tight text-ink">
+        <span className="sr-only">Step {number}: </span>
+        {title}
+      </h4>
       <p className="mt-2 min-h-[2.75rem] text-[15px] leading-[1.45] text-brown">{description}</p>
 
       <div
